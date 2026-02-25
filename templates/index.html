@@ -78,8 +78,10 @@
           {% elif "**Top Achievements**" in line %}
           <p><span class="info-label">🏆 Top Achievements:</span></p>
           <ul class="info-achievements">
-            {% elif line.startswith(" - ") %}
-            <li>{{ line.replace(' - ', '') }}</li>
+            {% elif line.strip().startswith("- ") and "**" not in line and line.strip() != "" %}
+            <li>{{ line.strip().lstrip("- ").strip() }}</li>
+            {% elif line.strip().startswith("* ") and "**" not in line and line.strip() != "" %}
+            <li>{{ line.strip().lstrip("* ").strip() }}</li>
             {% endif %}
             {% endfor %}
             {% if player_info.find("**Top Achievements**") != -1 %}

@@ -29,16 +29,21 @@ class CelebrityDetector:
                         {
                             "type": "text",
                             "text": """You are a celebrity recognition expert AI.
-                                    Identify the person in the image. If known, respond in this format:
+Identify the person in the image. If known, respond EXACTLY in this format with no extra text:
 
-                                    - **Full Name**:
-                                    - **Profession**:
-                                    - **Nationality**:
-                                    - **Famous For**:
-                                    - **Top Achievements**:
+- **Full Name**: <name>
+- **Profession**: <profession>
+- **Nationality**: <nationality>
+- **Famous For**: <short description>
+- **Top Achievements**:
+- <achievement 1>
+- <achievement 2>
+- <achievement 3>
+- <achievement 4>
+- <achievement 5>
 
-                                    If unknown, return "Unknown".
-                                    """
+Important: Each achievement must be on its own line starting with '- '.
+If the person is unknown, return only: Unknown."""
                         },
                         {
                             "type": "image_url",
@@ -74,6 +79,5 @@ class CelebrityDetector:
     def extract_name(self, content):
         for line in content.splitlines():
             if line.lower().startswith("- **full name**:"):
-                # Use split(":", 1) to handle names that contain colons
                 return line.split(":", 1)[-1].strip()
         return "Unknown"
