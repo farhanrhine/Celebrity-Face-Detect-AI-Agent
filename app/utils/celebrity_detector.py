@@ -26,16 +26,16 @@ class CelebrityDetector:
                         {
                             "type": "text",
                             "text": """You are a celebrity recognition expert AI. 
-Identify the person in the image. If known, respond in this format:
+                                    Identify the person in the image. If known, respond in this format:
 
-- **Full Name**:
-- **Profession**:
-- **Nationality**:
-- **Famous For**:
-- **Top Achievements**:
+                                    - **Full Name**:
+                                    - **Profession**:
+                                    - **Nationality**:
+                                    - **Famous For**:
+                                    - **Top Achievements**:
 
-If unknown, return "Unknown".
-"""
+                                    If unknown, return "Unknown".
+                                    """
                         },
                         {
                             "type": "image_url",
