@@ -3,4 +3,4 @@ venv/
 Celebrity_Detector_and_QA.egg-info/
 gcp-key.json
 __pycache__/
-FULL_DOCUMENTATION.md
+docs/
