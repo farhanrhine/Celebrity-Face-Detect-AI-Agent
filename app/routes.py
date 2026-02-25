@@ -1,62 +1,71 @@
-from flask import Blueprint,render_template,request
-
+from flask import Blueprint, render_template, request
 from app.utils.image_handler import process_image
 from app.utils.celebrity_detector import CelebrityDetector
 from app.utils.qa_engine import QAEngine
-
 import base64
+import logging
 
-main = Blueprint("main" , __name__)
+logger = logging.getLogger(__name__)
+
+main = Blueprint("main", __name__)
 
 celebrity_detector = CelebrityDetector()
 qa_engine = QAEngine()
 
-@main.route("/" , methods=["GET" ,"POST"])
+
+@main.route("/", methods=["GET", "POST"])
 def index():
     player_info = ""
     result_img_data = ""
-    user_question = ""
     answer = ""
-
+    error = ""
 
     if request.method == "POST":
+
+        # ── Image Upload ──────────────────────────────────────────────
         if "image" in request.files:
             image_file = request.files["image"]
 
             if image_file:
-                img_bytes , face_box = process_image(image_file)
+                try:
+                    img_bytes, face_box = process_image(image_file)
 
-                player_info , player_name = celebrity_detector.identify(img_bytes)
+                    if face_box is None:
+                        error = "No face detected in the image. Please try a clearer photo."
+                    else:
+                        result, name = celebrity_detector.identify(img_bytes)
 
-                if face_box is not None:
-                    result_img_data = base64.b64encode(img_bytes).decode()
-                else:
-                    player_info="No face detected Please try another image"
+                        if result is None:
+                            error = "Celebrity detection failed. Please check your API key or try again."
+                        else:
+                            player_info = result
+                            result_img_data = base64.b64encode(img_bytes).decode()
 
+                except Exception as e:
+                    logger.error(f"Image processing error: {e}")
+                    error = "Failed to process the image. Please try a different photo."
+
+        # ── Q&A ───────────────────────────────────────────────────────
         elif "question" in request.form:
-            user_question = request.form["question"]
+            try:
+                user_question = request.form.get("question", "").strip()
+                player_name = request.form.get("player_name", "")
+                player_info = request.form.get("player_info", "")
+                result_img_data = request.form.get("result_img_data", "")
 
-            player_name = request.form["player_name"]
-            player_info = request.form["player_info"]
-            result_img_data = request.form["result_img_data"]
+                if user_question and player_name:
+                    answer = qa_engine.ask_about_celebrity(player_name, user_question)
+                else:
+                    error = "Please provide a valid question."
 
-            answer = qa_engine.ask_about_celebrity(player_name,user_question)
+            except Exception as e:
+                logger.error(f"Q&A processing error: {e}")
+                error = "Something went wrong while processing your question. Please try again."
 
     return render_template(
         "index.html",
         player_info=player_info,
         result_img_data=result_img_data,
-        user_question=user_question,
-        answer=answer
+        answer=answer,
+        error=error
     )
-    
-
-
-
-
-        
-
-
-
-                
-

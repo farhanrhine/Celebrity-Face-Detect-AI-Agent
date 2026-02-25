@@ -1,6 +1,9 @@
 import os
 import base64
 import requests
+import logging
+
+logger = logging.getLogger(__name__)
 
 class CelebrityDetector:
 
@@ -9,23 +12,23 @@ class CelebrityDetector:
         self.api_url = "https://api.groq.com/openai/v1/chat/completions"
         self.model = "meta-llama/llama-4-maverick-17b-128e-instruct"
 
-    def identify(self , image_bytes):
+    def identify(self, image_bytes):
         encoded_image = base64.b64encode(image_bytes).decode()
 
         headers = {
-            "Authorization" : f"Bearer {self.api_key}",
-            "Content-Type" : "application/json"
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
         }
 
         prompt = {
             "model": self.model,
             "messages": [
                 {
-                    "role": "user", 
+                    "role": "user",
                     "content": [
                         {
                             "type": "text",
-                            "text": """You are a celebrity recognition expert AI. 
+                            "text": """You are a celebrity recognition expert AI.
                                     Identify the person in the image. If known, respond in this format:
 
                                     - **Full Name**:
@@ -46,28 +49,31 @@ class CelebrityDetector:
                     ]
                 }
             ],
-            "temperature": 0.3,    
-            "max_tokens": 1024     
+            "temperature": 0.3,
+            "max_tokens": 1024
         }
 
+        try:
+            response = requests.post(self.api_url, headers=headers, json=prompt, timeout=30)
 
-        response = requests.post(self.api_url , headers=headers , json=prompt)
+            if response.status_code == 200:
+                result = response.json()['choices'][0]['message']['content']
+                name = self.extract_name(result)
+                return result, name
+            else:
+                logger.error(f"Celebrity API error {response.status_code}: {response.text}")
+                return None, ""
 
-        if response.status_code==200:
-            result = response.json()['choices'][0]['message']['content']
+        except requests.exceptions.Timeout:
+            logger.error("Celebrity API request timed out")
+            return None, ""
+        except Exception as e:
+            logger.error(f"Celebrity API unexpected error: {e}")
+            return None, ""
 
-            name = self.extract_name(result)
-
-            return result , name  
-
-        return "Unknown" , ""  
-
-
-    def extract_name(self,content):
+    def extract_name(self, content):
         for line in content.splitlines():
             if line.lower().startswith("- **full name**:"):
-                return line.split(":")[1].strip()
-
-        return "Unknown"    
-
-
+                # Use split(":", 1) to handle names that contain colons
+                return line.split(":", 1)[-1].strip()
+        return "Unknown"
