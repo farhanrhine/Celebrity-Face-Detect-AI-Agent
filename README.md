@@ -20,44 +20,58 @@ flowchart LR
     classDef greenBox fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#fff
     classDef orangeBox fill:#f57c00,stroke:#e65100,stroke-width:2px,color:#fff
     classDef purpleBox fill:#7b1fa2,stroke:#4a148c,stroke-width:2px,color:#fff
-    classDef lightBlueBox fill:#4dd0e1,stroke:#0097a7,stroke-width:2px,color:#333
-    classDef greyBox fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px,color:#333
     classDef darkGreenRound fill:#2e7d32,stroke:#1b5e20,stroke-width:2px,color:#fff
+    classDef tealBox fill:#00796b,stroke:#004d40,stroke-width:2px,color:#fff
+    classDef greyBox fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px,color:#333
 
-    subgraph DevSetup [1. DEVELOPMENT SETUP]
+    subgraph Phase1 [1. LOCAL DEV & CONFIG]
         direction TB
-        A[Project & API<br>Setup]:::blueBox --> B[Image Handler<br>Code]:::blueBox
-        B --> C[Celebrity<br>Detector Code]:::orangeBox
-        C --> D[QA Engine<br>Code]:::purpleBox
-        D --> E[Routes<br>Code]:::greenBox
-        E --> F[Application<br>Code]:::lightBlueBox
-    end
-    
-    subgraph Containerization [2. CONTAINERIZATION]
-        direction TB
-        G[Dockerfile]:::blueBox
-        H[Kubernetes<br>Deployment File]:::greenBox
-        G --> H
+        App[Flask App<br>Source Code]:::blueBox
+        Docker[Dockerfile]:::orangeBox
+        K8s[Kubernetes<br>Deployment.yaml]:::greenBox
+        App --> Docker
+        Docker --> K8s
     end
 
-    subgraph CI [3. CI / CD PIPELINE]
+    subgraph Phase2 [2. CI/CD PIPELINE]
         direction TB
-        I[Code Versioning<br>using GitHub]:::greyBox --> J[CircleCI<br>Pipeline]:::greyBox
-        J --> K[Build & Push<br>Image toGAR]:::orangeBox
-        K --> L[Deploy<br>to GKE]:::greenBox
+        Git[Push Code<br>to GitHub]:::greyBox
+        Circle[CircleCI<br>Workflow]:::greyBox
+        Build[Build Docker<br>Image on GCP]:::blueBox
+        GAR[Push to GCP<br>Artifact Registry]:::orangeBox
+        GKE[Deploy App<br>to GKE Cluster]:::greenBox
+
+        Git --> Circle
+        Circle --> Build
+        Build --> GAR
+        GAR --> GKE
     end
 
-    M([Deployed<br>Application<br>on GKE]):::darkGreenRound
+    subgraph Phase3 [3. DOMAIN & HTTPS SETUP]
+        direction TB
+        Domain[Register .TECH<br>Domain]:::purpleBox
+        DNS[Map DNS Record<br>to GKE IP]:::purpleBox
+        Nginx[Install NGINX<br>Ingress]:::tealBox
+        Cert[Setup Let's Encrypt<br>Cert-Manager]:::tealBox
+        Ingress[Apply ingress.yaml<br>& ClusterIssuer]:::tealBox
+
+        Domain --> DNS
+        DNS --> Nginx
+        Nginx --> Cert
+        Cert --> Ingress
+    end
+
+    Live([Live App on<br>Custom Domain]):::darkGreenRound
 
     %% Connections across subgraphs
-    F --> |Triggers| G
-    H -.-> |Used by| L
-    L --> M
+    K8s --> |Commit to| Git
+    GKE --> |Raw IP used by| Domain
+    Ingress --> |Routes Traffic to| Live
 
     %% Subgraph Styling
-    style DevSetup fill:#fffde7,stroke:#fbc02d,stroke-dasharray: 5 5
-    style Containerization fill:#e8f5e9,stroke:#4caf50,stroke-dasharray: 5 5
-    style CI fill:#f3e5f5,stroke:#9c27b0,stroke-dasharray: 5 5
+    style Phase1 fill:#fffde7,stroke:#fbc02d,stroke-dasharray: 5 5
+    style Phase2 fill:#f3e5f5,stroke:#9c27b0,stroke-dasharray: 5 5
+    style Phase3 fill:#e0f7fa,stroke:#00acc1,stroke-dasharray: 5 5
 ```
 
 ## Tech Stack
