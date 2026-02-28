@@ -14,28 +14,50 @@ A Flask web application that detects celebrity faces in uploaded images using Op
 ## Workflow
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#dbeafe', 'primaryTextColor': '#1e3a5f', 'primaryBorderColor': '#2563eb', 'lineColor': '#3b82f6', 'secondaryColor': '#f0fdf4', 'tertiaryColor': '#fef3c7', 'edgeLabelBackground': '#ffffff'}}}%%
-flowchart TD
-    A(["💻 Write Flask App Source Code"]):::phase1 --> B["📦 Create Dockerfile"]:::phase1
-    B --> C["🚀 Write Kubernetes Deployment.yaml"]:::phase1
-    
-    C -->|"Commit & Push"| D["📤 Trigger CircleCI Pipeline via GitHub"]:::phase2
-    D --> E["🏗️ Build Docker Image on GCP"]:::phase2
-    E --> F["🗄️ Push to Artifact Registry"]:::phase2
-    F --> G["☸️ Deploy App to GKE Cluster"]:::phase2
-    
-    G -->|"Use Raw IP"| H["🌐 Register .TECH Domain"]:::phase3
-    H --> I["🗺️ Map DNS Record to GKE IP"]:::phase3
-    I --> J["🚦 Install NGINX Ingress"]:::phase3
-    J --> K["🔒 Setup Let's Encrypt Cert-Manager"]:::phase3
-    K --> L["📑 Apply ingress.yaml & ClusterIssuer"]:::phase3
-    
-    L -->|"Traffic Secured"| M{"🎉 Live App on Custom Domain"}:::live
+flowchart LR
+    %% Define Styles
+    classDef blueBox fill:#1976d2,stroke:#0d47a1,stroke-width:2px,color:#fff
+    classDef greenBox fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#fff
+    classDef orangeBox fill:#f57c00,stroke:#e65100,stroke-width:2px,color:#fff
+    classDef purpleBox fill:#7b1fa2,stroke:#4a148c,stroke-width:2px,color:#fff
+    classDef lightBlueBox fill:#4dd0e1,stroke:#0097a7,stroke-width:2px,color:#333
+    classDef greyBox fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px,color:#333
+    classDef darkGreenRound fill:#2e7d32,stroke:#1b5e20,stroke-width:2px,color:#fff
 
-    classDef phase1 fill:#eff6ff,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef phase2 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#92400e
-    classDef phase3 fill:#f0fdf4,stroke:#22c55e,stroke-width:2px,color:#166534
-    classDef live fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#9d174d
+    subgraph DevSetup [1. DEVELOPMENT SETUP]
+        direction TB
+        A[Project & API<br>Setup]:::blueBox --> B[Image Handler<br>Code]:::blueBox
+        B --> C[Celebrity<br>Detector Code]:::orangeBox
+        C --> D[QA Engine<br>Code]:::purpleBox
+        D --> E[Routes<br>Code]:::greenBox
+        E --> F[Application<br>Code]:::lightBlueBox
+    end
+    
+    subgraph Containerization [2. CONTAINERIZATION]
+        direction TB
+        G[Dockerfile]:::blueBox
+        H[Kubernetes<br>Deployment File]:::greenBox
+        G --> H
+    end
+
+    subgraph CI [3. CI / CD PIPELINE]
+        direction TB
+        I[Code Versioning<br>using GitHub]:::greyBox --> J[CircleCI<br>Pipeline]:::greyBox
+        J --> K[Build & Push<br>Image toGAR]:::orangeBox
+        K --> L[Deploy<br>to GKE]:::greenBox
+    end
+
+    M([Deployed<br>Application<br>on GKE]):::darkGreenRound
+
+    %% Connections across subgraphs
+    F --> |Triggers| G
+    H -.-> |Used by| L
+    L --> M
+
+    %% Subgraph Styling
+    style DevSetup fill:#fffde7,stroke:#fbc02d,stroke-dasharray: 5 5
+    style Containerization fill:#e8f5e9,stroke:#4caf50,stroke-dasharray: 5 5
+    style CI fill:#f3e5f5,stroke:#9c27b0,stroke-dasharray: 5 5
 ```
 
 ## Tech Stack
