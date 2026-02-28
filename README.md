@@ -14,45 +14,64 @@ A Flask web application that detects celebrity faces in uploaded images using Op
 ## Workflow
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#dbeafe', 'primaryTextColor': '#1e3a5f', 'primaryBorderColor': '#2563eb', 'lineColor': '#3b82f6', 'secondaryColor': '#f0fdf4', 'tertiaryColor': '#fef3c7', 'edgeLabelBackground': '#ffffff'}}}%%
-flowchart TD
-    classDef phase1 fill:#eff6ff,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef phase2 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#92400e
-    classDef phase3 fill:#f0fdf4,stroke:#22c55e,stroke-width:2px,color:#166534
-    classDef live fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#9d174d
+flowchart LR
+    %% Define Styles
+    classDef blueBox fill:#1976d2,stroke:#0d47a1,stroke-width:2px,color:#fff
+    classDef greenBox fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#fff
+    classDef orangeBox fill:#f57c00,stroke:#e65100,stroke-width:2px,color:#fff
+    classDef purpleBox fill:#7b1fa2,stroke:#4a148c,stroke-width:2px,color:#fff
+    classDef darkGreenRound fill:#2e7d32,stroke:#1b5e20,stroke-width:2px,color:#fff
+    classDef tealBox fill:#00796b,stroke:#004d40,stroke-width:2px,color:#fff
+    classDef greyBox fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px,color:#333
 
     subgraph Phase1 [1. LOCAL DEV & CONFIG]
-        direction LR
-        A(["💻 Flask App<br>Source Code"]):::phase1 --> B["📦 Create<br>Dockerfile"]:::phase1
-        B --> C["🚀 Kubernetes<br>Deployment.yaml"]:::phase1
+        direction TB
+        App[Flask App<br>Source Code]:::blueBox
+        Docker[Dockerfile]:::orangeBox
+        K8s[Kubernetes<br>Deployment.yaml]:::greenBox
+        App --> Docker
+        Docker --> K8s
     end
 
     subgraph Phase2 [2. CI/CD PIPELINE]
-        direction LR
-        D["📤 Pipeline via<br>GitHub"]:::phase2 --> E["🏗️ Build Image<br>on GCP"]:::phase2
-        E --> F["🗄️ Push to<br>Gar"]:::phase2
-        F --> G["☸️ Deploy to<br>GKE Cluster"]:::phase2
+        direction TB
+        Git[Push Code<br>to GitHub]:::greyBox
+        Circle[CircleCI<br>Workflow]:::greyBox
+        Build[Build Docker<br>Image on GCP]:::blueBox
+        GAR[Push to GCP<br>Artifact Registry]:::orangeBox
+        GKE[Deploy App<br>to GKE Cluster]:::greenBox
+
+        Git --> Circle
+        Circle --> Build
+        Build --> GAR
+        GAR --> GKE
     end
 
     subgraph Phase3 [3. DOMAIN & HTTPS SETUP]
-        direction LR
-        H["🌐 Register<br>.TECH Domain"]:::phase3 --> I["🗺️ Map DNS to<br>GKE IP"]:::phase3
-        I --> J["🚦 Install<br>NGINX Ingress"]:::phase3
-        J --> K["🔒 Setup Let's<br>Encrypt"]:::phase3
-        K --> L["📑 Apply<br>ingress.yaml"]:::phase3
+        direction TB
+        Domain[Register .TECH<br>Domain]:::purpleBox
+        DNS[Map DNS Record<br>to GKE IP]:::purpleBox
+        Nginx[Install NGINX<br>Ingress]:::tealBox
+        Cert[Setup Let's Encrypt<br>Cert-Manager]:::tealBox
+        Ingress[Apply ingress.yaml<br>& ClusterIssuer]:::tealBox
+
+        Domain --> DNS
+        DNS --> Nginx
+        Nginx --> Cert
+        Cert --> Ingress
     end
 
-    M{"🎉 Live App on<br>Custom Domain"}:::live
+    Live([Live App on<br>Custom Domain]):::darkGreenRound
 
     %% Connections across subgraphs
-    C -->|"Commit & Push"| D
-    G -->|"Use Raw IP"| H
-    L -->|"Traffic Secured"| M
+    K8s --> |Commit to| Git
+    GKE --> |Raw IP used by| Domain
+    Ingress --> |Routes Traffic to| Live
 
     %% Subgraph Styling
-    style Phase1 fill:#ffffff,stroke:#2563eb,stroke-dasharray: 5 5,stroke-width:2px,color:#1e40af
-    style Phase2 fill:#ffffff,stroke:#f59e0b,stroke-dasharray: 5 5,stroke-width:2px,color:#92400e
-    style Phase3 fill:#ffffff,stroke:#22c55e,stroke-dasharray: 5 5,stroke-width:2px,color:#166534
+    style Phase1 fill:#fffde7,stroke:#fbc02d,stroke-dasharray: 5 5
+    style Phase2 fill:#f3e5f5,stroke:#9c27b0,stroke-dasharray: 5 5
+    style Phase3 fill:#e0f7fa,stroke:#00acc1,stroke-dasharray: 5 5
 ```
 
 ## Tech Stack
