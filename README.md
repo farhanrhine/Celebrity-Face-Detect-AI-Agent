@@ -14,7 +14,7 @@ A Flask web application that detects celebrity faces in uploaded images using Op
 ## Workflow
 
 ```mermaid
-flowchart LR
+flowchart TD
     %% Define Styles
     classDef blueBox fill:#1976d2,stroke:#0d47a1,stroke-width:2px,color:#fff
     classDef greenBox fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#fff
@@ -25,7 +25,7 @@ flowchart LR
     classDef greyBox fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px,color:#333
 
     subgraph Phase1 [1. LOCAL DEV & CONFIG]
-        direction TB
+        direction LR
         App[Flask App<br>Source Code]:::blueBox
         Docker[Dockerfile]:::orangeBox
         K8s[Kubernetes<br>Deployment.yaml]:::greenBox
@@ -34,7 +34,7 @@ flowchart LR
     end
 
     subgraph Phase2 [2. CI/CD PIPELINE]
-        direction TB
+        direction LR
         Git[Push Code<br>to GitHub]:::greyBox
         Circle[CircleCI<br>Workflow]:::greyBox
         Build[Build Docker<br>Image on GCP]:::blueBox
@@ -48,7 +48,7 @@ flowchart LR
     end
 
     subgraph Phase3 [3. DOMAIN & HTTPS SETUP]
-        direction TB
+        direction LR
         Domain[Register .TECH<br>Domain]:::purpleBox
         DNS[Map DNS Record<br>to GKE IP]:::purpleBox
         Nginx[Install NGINX<br>Ingress]:::tealBox
