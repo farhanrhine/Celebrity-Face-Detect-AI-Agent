@@ -61,39 +61,39 @@ graph TD
 
     %% CI/CD Pipeline
     subgraph CI_CD["CI/CD Pipeline (CircleCI)"]
-        Dev["Developer"] -->|git push| GitHub["GitHub Repository"]
-        GitHub -->|triggers| CircleCI["CircleCI Pipeline"]
-        CircleCI -->|1. Build Image| DockerBuild["Docker Build (python:3.12-slim + uv)"]
-        DockerBuild -->|2. Push Image| GCP_AR["GCP Artifact Registry (us-central1)"]
-        CircleCI -->|3. Deploy| GKE_Deploy["Update GKE Deployment"]
+        Dev["Developer"] -->|"git push"| GitHub["GitHub Repository"]
+        GitHub -->|"triggers"| CircleCI["CircleCI Pipeline"]
+        CircleCI -->|"1. Build Image"| DockerBuild["Docker Build (python:3.12-slim + uv)"]
+        DockerBuild -->|"2. Push Image"| GCP_AR["GCP Artifact Registry (us-central1)"]
+        CircleCI -->|"3. Deploy"| GKE_Deploy["Update GKE Deployment"]
     end
     
     %% GCP Ecosystem
     subgraph GCP["Google Cloud Platform (GKE)"]
-        GCP_AR -.->|Pulls latest image| Container
+        GCP_AR -.->|"Pulls latest image"| Container
         
         %% Kubernetes Cluster
         subgraph Cluster["Kubernetes Cluster"]
             Ingress["Nginx Ingress (face-detect-ingress)"]
-            CertManager["Cert-Manager (Let's Encrypt TLS)"]
+            CertManager["Cert-Manager (Lets Encrypt TLS)"]
             Service["K8s Service (face-detect-service)"]
             
-            CertManager -.->|Issues & Renews Certs| Ingress
+            CertManager -.->|"Issues & Renews Certs"| Ingress
             
             subgraph Pods["Deployment: face-detect-ai-agent"]
-                Container["Flask App Container\n(app.py : Port 5000)\n+ OpenCV Face Detection"]
+                Container["Flask App Container<br>(app.py : Port 5000)<br>+ OpenCV Face Detection"]
             end
             
-            Ingress -->|Routes HTTP/S Traffic| Service
-            Service -->|Load Balances| Container
+            Ingress -->|"Routes HTTP/S Traffic"| Service
+            Service -->|"Load Balances"| Container
         end
     end
 
     %% External & Users
-    User["End User\n(Web Browser)"] -->|HTTPS (face-detect-ai.tech)| Ingress
+    User["End User<br>(Web Browser)"] -->|"HTTPS (face-detect-ai.tech)"| Ingress
     
-    GroqAPI["Groq API\n(Llama 4 Maverick)"]
-    Container -->|API Calls (Identity + Q&A)| GroqAPI
+    GroqAPI["Groq API<br>(Llama 4 Maverick)"]
+    Container -->|"API Calls (Identity + Q&A)"| GroqAPI
 
     %% Assign Styles
     class Dev,User user;
