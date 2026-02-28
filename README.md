@@ -14,7 +14,7 @@ A Flask web application that detects celebrity faces in uploaded images using Op
 ## Workflow
 
 ```mermaid
-flowchart LR
+flowchart TD
     %% Define Styles
     classDef blueBox fill:#1976d2,stroke:#0d47a1,stroke-width:2px,color:#fff
     classDef greenBox fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#fff
@@ -34,16 +34,15 @@ flowchart LR
     end
     
     subgraph Containerization [2. CONTAINERIZATION]
-        direction TB
+        direction LR
         G[Dockerfile]:::blueBox
-        H[Kubernetes<br>Deployment File]:::greenBox
-        G --> H
+        H[Kubernetes<br>Deployment<br>File]:::greenBox
     end
 
     subgraph CI [3. CI / CD PIPELINE]
         direction TB
         I[Code Versioning<br>using GitHub]:::greyBox --> J[CircleCI<br>Pipeline]:::greyBox
-        J --> K[Build & Push<br>Image toGAR]:::orangeBox
+        J --> K[Build & Push<br>Image to GAR]:::orangeBox
         K --> L[Deploy<br>to GKE]:::greenBox
     end
 
@@ -51,7 +50,8 @@ flowchart LR
 
     %% Connections across subgraphs
     F --> |Triggers| G
-    H -.-> |Used by| L
+    G --> |Read by| K
+    H --> |Applied by| L
     L --> M
 
     %% Subgraph Styling
