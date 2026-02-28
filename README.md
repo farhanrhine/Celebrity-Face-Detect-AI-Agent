@@ -14,7 +14,7 @@ A Flask web application that detects celebrity faces in uploaded images using Op
 ## Workflow
 
 ```mermaid
-flowchart TD
+flowchart LR
     %% Define Styles
     classDef blueBox fill:#1976d2,stroke:#0d47a1,stroke-width:2px,color:#fff
     classDef greenBox fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#fff
@@ -24,34 +24,34 @@ flowchart TD
     classDef greyBox fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px,color:#333
     classDef darkGreenRound fill:#2e7d32,stroke:#1b5e20,stroke-width:2px,color:#fff
 
-    subgraph DevSetup [1 DEVELOPMENT SETUP]
-        direction LR
-        A[Project and API Setup]:::blueBox --> B[Image Handler Code]:::blueBox
-        B --> C[Celebrity Detector Code]:::orangeBox
-        C --> D[QA Engine Code]:::purpleBox
-        D --> E[Routes Code]:::greenBox
-        E --> F[Application Code]:::lightBlueBox
+    subgraph DevSetup [1. DEVELOPMENT SETUP]
+        direction TB
+        A[Project & API<br>Setup]:::blueBox --> B[Image Handler<br>Code]:::blueBox
+        B --> C[Celebrity<br>Detector Code]:::orangeBox
+        C --> D[QA Engine<br>Code]:::purpleBox
+        D --> E[Routes<br>Code]:::greenBox
+        E --> F[Application<br>Code]:::lightBlueBox
     end
     
-    subgraph Containerization [2 CONTAINERIZATION DEPLOYMENT]
-        direction LR
+    subgraph Containerization [2. CONTAINERIZATION]
+        direction TB
         G[Dockerfile]:::blueBox
-        H[Kubernetes Deployment File]:::greenBox
+        H[Kubernetes<br>Deployment File]:::greenBox
+        G --> H
     end
 
-    subgraph CI [3 VERSION CONTROL CI]
-        direction LR
-        I[Code Versioning using GitHub]:::greyBox --> J[CircleCI Pipeline]:::greyBox
-        J --> K[Build and Push Image to GAR]:::orangeBox
-        K --> L[Deploy to GKE]:::greenBox
+    subgraph CI [3. CI / CD PIPELINE]
+        direction TB
+        I[Code Versioning<br>using GitHub]:::greyBox --> J[CircleCI<br>Pipeline]:::greyBox
+        J --> K[Build & Push<br>Image toGAR]:::orangeBox
+        K --> L[Deploy<br>to GKE]:::greenBox
     end
 
-    M([Deployed Application on GKE]):::darkGreenRound
+    M([Deployed<br>Application<br>on GKE]):::darkGreenRound
 
     %% Connections across subgraphs
-    F --> |Triggers Containerization| G
-    G --> |Read by| K
-    H --> |Applied by| L
+    F --> |Triggers| G
+    H -.-> |Used by| L
     L --> M
 
     %% Subgraph Styling
