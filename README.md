@@ -16,26 +16,43 @@ A Flask web application that detects celebrity faces in uploaded images using Op
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#dbeafe', 'primaryTextColor': '#1e3a5f', 'primaryBorderColor': '#2563eb', 'lineColor': '#3b82f6', 'secondaryColor': '#f0fdf4', 'tertiaryColor': '#fef3c7', 'edgeLabelBackground': '#ffffff'}}}%%
 flowchart TD
-    A(["💻 Write Flask App Source Code"]):::phase1 --> B["📦 Create Dockerfile"]:::phase1
-    B --> C["🚀 Write Kubernetes Deployment.yaml"]:::phase1
-    
-    C -->|"Commit & Push"| D["📤 Trigger CircleCI Pipeline via GitHub"]:::phase2
-    D --> E["🏗️ Build Docker Image on GCP"]:::phase2
-    E --> F["🗄️ Push to Artifact Registry"]:::phase2
-    F --> G["☸️ Deploy App to GKE Cluster"]:::phase2
-    
-    G -->|"Use Raw IP"| H["🌐 Register .TECH Domain"]:::phase3
-    H --> I["🗺️ Map DNS Record to GKE IP"]:::phase3
-    I --> J["🚦 Install NGINX Ingress"]:::phase3
-    J --> K["🔒 Setup Let's Encrypt Cert-Manager"]:::phase3
-    K --> L["📑 Apply ingress.yaml & ClusterIssuer"]:::phase3
-    
-    L -->|"Traffic Secured"| M{"🎉 Live App on Custom Domain"}:::live
-
     classDef phase1 fill:#eff6ff,stroke:#2563eb,stroke-width:2px,color:#1e40af
     classDef phase2 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#92400e
     classDef phase3 fill:#f0fdf4,stroke:#22c55e,stroke-width:2px,color:#166534
     classDef live fill:#fce7f3,stroke:#ec4899,stroke-width:2px,color:#9d174d
+
+    subgraph Phase1 [1. LOCAL DEV & CONFIG]
+        direction LR
+        A(["💻 Flask App<br>Source Code"]):::phase1 --> B["📦 Create<br>Dockerfile"]:::phase1
+        B --> C["🚀 Kubernetes<br>Deployment.yaml"]:::phase1
+    end
+
+    subgraph Phase2 [2. CI/CD PIPELINE]
+        direction LR
+        D["📤 Pipeline via<br>GitHub"]:::phase2 --> E["🏗️ Build Image<br>on GCP"]:::phase2
+        E --> F["🗄️ Push to<br>Gar"]:::phase2
+        F --> G["☸️ Deploy to<br>GKE Cluster"]:::phase2
+    end
+
+    subgraph Phase3 [3. DOMAIN & HTTPS SETUP]
+        direction LR
+        H["🌐 Register<br>.TECH Domain"]:::phase3 --> I["🗺️ Map DNS to<br>GKE IP"]:::phase3
+        I --> J["🚦 Install<br>NGINX Ingress"]:::phase3
+        J --> K["🔒 Setup Let's<br>Encrypt"]:::phase3
+        K --> L["📑 Apply<br>ingress.yaml"]:::phase3
+    end
+
+    M{"🎉 Live App on<br>Custom Domain"}:::live
+
+    %% Connections across subgraphs
+    C -->|"Commit & Push"| D
+    G -->|"Use Raw IP"| H
+    L -->|"Traffic Secured"| M
+
+    %% Subgraph Styling
+    style Phase1 fill:#ffffff,stroke:#2563eb,stroke-dasharray: 5 5,stroke-width:2px,color:#1e40af
+    style Phase2 fill:#ffffff,stroke:#f59e0b,stroke-dasharray: 5 5,stroke-width:2px,color:#92400e
+    style Phase3 fill:#ffffff,stroke:#22c55e,stroke-dasharray: 5 5,stroke-width:2px,color:#166534
 ```
 
 ## Tech Stack
