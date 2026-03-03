@@ -46,7 +46,7 @@ face-detect-ai-agent/
 ├── kubernetes-deployment.yaml  # K8s deployment + service
 ├── pyproject.toml           # Project dependencies
 └── .circleci/
-    └── config.yaml          # CI/CD pipeline
+    └── config.yml          # CI/CD pipeline
 ```
 
 ## Architecture Workflow
@@ -157,7 +157,7 @@ Every `git push` to `main` automatically:
 
 **CircleCI Environment Variables required:**
 
-- `GCLOUD_SERVICE_KEY` — Base64-encoded GCP service account key
+- `GCLOUD_SERVICE_KEY` — Raw JSON content of your GCP service account key
 - `GOOGLE_PROJECT_ID` — Your GCP project ID
 - `GKE_CLUSTER` — Your GKE cluster name
 - `GOOGLE_COMPUTE_REGION` — GCP region (e.g. `us-central1`)
