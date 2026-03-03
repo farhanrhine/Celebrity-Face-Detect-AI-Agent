@@ -32,7 +32,7 @@ metadata:
   name: face-detect-service
 spec:
   selector:
-    app: face-detect-ai-agent
+    app: face-detect-ai-agent-app
   ports:
     - protocol: TCP
       port: 80

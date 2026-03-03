@@ -20,30 +20,35 @@ jobs:
       - run:
           name: Install Docker CLI
           command: |
-            apt-get update && apt-get install -y docker.io
+            curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-24.0.7.tgz | tar xz --strip-components=1 -C /usr/local/bin docker/docker
+            docker --version
       - run:
           name: Authenticate with Google Cloud
           command: |
             echo "$GCLOUD_SERVICE_KEY" > gcp-key.json
             gcloud auth activate-service-account --key-file=gcp-key.json
-            gcloud auth configure-docker us-central1-docker.pkg.dev || gcloud auth configure-docker
+            rm -f gcp-key.json
+            gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
       - run:
           name: Build and Push Image
           command: |
-            docker build -t us-central1-docker.pkg.dev/$GOOGLE_PROJECT_ID/face-detection-ai-agent/face-detect-ai-agent:latest .
-            docker push us-central1-docker.pkg.dev/$GOOGLE_PROJECT_ID/face-detection-ai-agent/face-detect-ai-agent:latest
+            docker build -t us-central1-docker.pkg.dev/$GOOGLE_PROJECT_ID/$GCR_REPO/face-detect-ai-agent:latest .
+            docker push us-central1-docker.pkg.dev/$GOOGLE_PROJECT_ID/$GCR_REPO/face-detect-ai-agent:latest
 
   deploy_to_gke:
     executor: docker-executor
     steps:
       - checkout
-      - setup_remote_docker
+      - run:
+          name: Install kubectl
+          command: |
+            gcloud components install kubectl --quiet
       - run:
           name: Authenticate with Google Cloud
           command: |
             echo "$GCLOUD_SERVICE_KEY" > gcp-key.json
             gcloud auth activate-service-account --key-file=gcp-key.json
-            gcloud auth configure-docker us-central1-docker.pkg.dev || gcloud auth configure-docker
+            rm -f gcp-key.json
       - run:
           name: Configure GKE
           command: |
@@ -52,7 +57,7 @@ jobs:
           name: Deploy to GKE
           command: |
             kubectl apply -f kubernetes-deployment.yaml --validate=false
-            kubectl rollout restart deployment face-detect-ai-agent-app
+            kubectl rollout restart deployment face-detect-ai-agent
 
 workflows:
   version: 2
