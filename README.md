@@ -2,6 +2,9 @@
 
 **Live:** [https://face-detect.tech](https://face-detect.tech)
 
+- ⚠️ Note: The live deployment was removed after cloud credits expired. 
+Please see the demo video below for a full walkthrough of the working system. (on my linkdin: https://www.linkedin.com/in/farhanrhine/)
+
 A Flask web application that detects celebrity faces in uploaded images using OpenCV and identifies them using the Groq AI API. Users can also ask questions about the detected celebrity.
 
 ## What It Does
