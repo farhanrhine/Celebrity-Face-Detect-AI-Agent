@@ -114,7 +114,7 @@ graph TD
 
 ```bash
 git clone https://github.com/farhanrhine/Celebrity-Face-Detect-AI-Agent.git
-cd face-detect-ai-agent-gcp
+cd face-detect-ai-agent
 ```
 
 **2. Create a `.env` file:**
